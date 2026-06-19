@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
 
-  <title>Visualização | BPMN CBMDF</title>
+  <title>Mapeamento | Emergência 360 (CBMDF - SAMU)</title>
 
   <link rel="stylesheet" href="./dist/vendor/bpmn-js/assets/diagram-js.css" />
   <link rel="stylesheet" href="./dist/vendor/bpmn-js/assets/bpmn-js.css" />
@@ -11,14 +11,14 @@
   <link rel="stylesheet" href="./dist/vendor/bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css" />
   <link rel="stylesheet" href="./style.css" />
 
-  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="icon" type="image/png" href="resources/img/favicon.png" />
 
   <meta property="og:locale" content="pt_BR" />
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Demonstração do Simulador BPMN CBMDF" />
-  <meta property="og:title" content="Visualização | BPMN CBMDF" />
+  <meta property="og:site_name" content="Plataforma Emergência 360" />
+  <meta property="og:title" content="Mapeamento de Processos | Emergência 360" />
   <meta property="og:url" content="https://munizigor.github.io/bpmn-cbmdf" />
-  <meta property="og:description" content="Simulador de Token e Modelador de Processos BPMN para o CBMDF." />
+  <meta property="og:description" content="Simulador e visualizador de processos BPMN da integração entre o 193 (CBMDF) e o 192 (SAMU)." />
   <meta property="og:image" content="https://bpmn-io.github.io/bpmn-js-token-simulation/screenshot.png" />
 
   <style>
@@ -42,12 +42,26 @@
     }
 
     .sidebar-header {
-      padding: 20px;
-      background-color: #bd1a1a; /* Vermelho Institucional CBMDF */
+      padding: 0; /* Removido o padding estático para acomodar a imagem de forma fluida */
+      background-color: #bd1a1a; /* Vermelho Institucional */
       color: white;
       font-weight: bold;
       font-size: 1.1em;
       letter-spacing: 0.5px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Nova classe para estilizar e ajustar a imagem de cabeçalho da sidebar */
+    .sidebar-header img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Div interna para o texto do cabeçalho abaixo ou sobreposto à imagem, se necessário */
+    .sidebar-header-title {
+      padding: 15px 20px;
     }
 
     .process-list {
@@ -58,7 +72,6 @@
       flex-grow: 1;
     }
 
-    /* Estilizando as tags 'a' para se comportarem como botões na lista */
     .process-link {
       display: block;
       padding: 14px 20px;
@@ -72,7 +85,7 @@
     .process-link:hover {
       background-color: #e8ecef;
       color: #bd1a1a;
-      padding-left: 25px; /* Efeito sutil de deslocamento */
+      padding-left: 25px;
     }
 
     .main-content {
@@ -84,26 +97,26 @@
 </head>
 <body>
 
-  <!-- BARRA LATERAL ESQUERDA -->
   <div class="sidebar">
     <div class="sidebar-header">
-      EMERGÊNCIA 360 | Integração CBMDF-SAMU
+      <img src="resources/img/sidebar-header.png" alt="Logo Emergência 360">
+      <div class="sidebar-header-title">
+        EMERGÊNCIA 360 <br>
+        <span style="font-size: 0.8em; font-weight: normal; opacity: 0.9;">Integração 193 (CBMDF) e 192 (SAMU)</span>
+      </div>
     </div>
     <ul class="process-list" role="list">
-      <!-- Lista automática dos arquivos reais dentro de example/resources/ -->
-    </ul>
+      </ul>
   </div>
 
-  <!-- ÁREA DO MODELADOR/SIMULADOR -->
   <div class="main-content">
     <div class="canvas-parent">
       <div class="canvas" id="canvas">
-        <div class="drop-message"><strong>Dica:</strong> Selecione um processo ao lado ou arraste um diagrama aqui</div>
+        <div class="drop-message"><strong>Dica:</strong> Selecione um fluxo integrado ao lado ou arraste um diagrama aqui</div>
       </div>
     </div>
   </div>
 
-  <!-- O script compilado gerado pelo Webpack -->
   <script src="./dist/viewer.js"></script>
 
   <script>
@@ -111,22 +124,22 @@
     const listContainer = document.querySelector('.process-list');
     if (!listContainer) return;
 
-    listContainer.innerHTML = '<div style="padding: 20px; color: #666;">Carregando index...</div>';
+    listContainer.innerHTML = '<div style="padding: 20px; color: #666;">Carregando fluxos de integração...</div>';
 
     // Busca o arquivo Markdown de índice
     fetch('./resources/manifest/index.md')
       .then(res => {
-        if (!res.ok) throw new Error('Índice Markdown não encontrado');
+        if (!res.ok) throw new Error('Índice de processos não encontrado');
         return res.text();
       })
       .then(markdownText => {
-        listContainer.innerHTML = ''; // Limpa o container
+        listContainer.innerHTML = ''; 
 
         // Divide o arquivo linha por linha
         const linhas = markdownText.split('\n');
 
         linhas.forEach(linha => {
-          const linhaTrim = linha.trim();
+          const linhaTrim = inline_adjust = linha.trim();
 
           // 1. Se for um título de Seção (ex: ## Seção)
           if (linhaTrim.startsWith('##')) {
@@ -135,7 +148,6 @@
             divTitulo.className = 'sidebar-section-title';
             divTitulo.textContent = tituloSeacao;
             
-            // Estilização básica para o título da seção
             divTitulo.style.padding = '15px 20px 5px 20px';
             divTitulo.style.fontWeight = 'bold';
             divTitulo.style.fontSize = '0.85em';
@@ -148,21 +160,19 @@
           
           // 2. Se for um item de lista com link Markdown (ex: - [Texto](link.bpmn))
           else if (linhaTrim.startsWith('-') && linhaTrim.includes('[') && linhaTrim.includes('](')) {
-            // Expressão regular para capturar o [Texto] e o (Link)
             const match = linhaTrim.match(/-\s+\[(.*?)\]\((.*?)\)/);
             
             if (match) {
               const textoAmigavel = match[1];
               const nomeArquivo = match[2];
 
-              const li = document.createElement('div'); // Container do item
+              const li = document.createElement('div'); 
               const a = document.createElement('a');
               
               a.className = 'process-link';
               a.href = '?diagram=./resources/' + encodeURIComponent(nomeArquivo);
               a.textContent = textoAmigavel;
               
-              // Mantém uma margem esquerda para dar o efeito de recuo/indentação da lista
               a.style.paddingLeft = '30px'; 
 
               li.appendChild(a);
@@ -173,7 +183,7 @@
       })
       .catch(err => {
         console.error(err);
-        listContainer.innerHTML = '<div style="padding: 20px; color: red;">Erro ao carregar menu.</div>';
+        listContainer.innerHTML = '<div style="padding: 20px; color: red;">Erro ao carregar o menu de processos.</div>';
       });
   })();
 </script>
