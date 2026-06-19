@@ -87,7 +87,7 @@
   <!-- BARRA LATERAL ESQUERDA -->
   <div class="sidebar">
     <div class="sidebar-header">
-      Repositório de Processos
+      Fluxos Processuais
     </div>
     <ul class="process-list" role="list">
       <!-- Lista automática dos arquivos reais dentro de example/resources/ -->
@@ -107,40 +107,76 @@
   <script src="./dist/viewer.js"></script>
 
   <script>
-    (function () {
-      const list = document.querySelector('.process-list');
-      if (!list) return;
-      list.innerHTML = '<li class="process-link">Carregando...</li>';
+  (function () {
+    const listContainer = document.querySelector('.process-list');
+    if (!listContainer) return;
 
-      // Espera-se um arquivo ./resources/manifest.json contendo um array de nomes de arquivos, ex:
-      // ["Acionamento de Transbordo.bpmn", "OutroDiagrama.bpmn"]
-      fetch('./resources/manifest/manifest.json')
-        .then(res => {
-          if (!res.ok) throw new Error('Manifest not found');
-          return res.json();
-        })
-        .then(files => {
-          list.innerHTML = '';
-          if (!files || !files.length) {
-            list.innerHTML = '<li class="process-link">Nenhum diagrama encontrado.</li>';
-            return;
+    listContainer.innerHTML = '<div style="padding: 20px; color: #666;">Carregando index...</div>';
+
+    // Busca o arquivo Markdown de índice
+    fetch('./resources/manifest/index.md')
+      .then(res => {
+        if (!res.ok) throw new Error('Índice Markdown não encontrado');
+        return res.text();
+      })
+      .then(markdownText => {
+        listContainer.innerHTML = ''; // Limpa o container
+
+        // Divide o arquivo linha por linha
+        const linhas = markdownText.split('\n');
+
+        linhas.forEach(linha => {
+          const linhaTrim = linha.trim();
+
+          // 1. Se for um título de Seção (ex: ## Seção)
+          if (linhaTrim.startsWith('##')) {
+            const tituloSeacao = linhaTrim.replace(/^##\s+/, '');
+            const divTitulo = document.createElement('div');
+            divTitulo.className = 'sidebar-section-title';
+            divTitulo.textContent = tituloSeacao;
+            
+            // Estilização básica para o título da seção
+            divTitulo.style.padding = '15px 20px 5px 20px';
+            divTitulo.style.fontWeight = 'bold';
+            divTitulo.style.fontSize = '0.85em';
+            divTitulo.style.color = '#bd1a1a';
+            divTitulo.style.textTransform = 'uppercase';
+            divTitulo.style.letterSpacing = '0.5px';
+            
+            listContainer.appendChild(divTitulo);
+          } 
+          
+          // 2. Se for um item de lista com link Markdown (ex: - [Texto](link.bpmn))
+          else if (linhaTrim.startsWith('-') && linhaTrim.includes('[') && linhaTrim.includes('](')) {
+            // Expressão regular para capturar o [Texto] e o (Link)
+            const match = linhaTrim.match(/-\s+\[(.*?)\]\((.*?)\)/);
+            
+            if (match) {
+              const textoAmigavel = match[1];
+              const nomeArquivo = match[2];
+
+              const li = document.createElement('div'); // Container do item
+              const a = document.createElement('a');
+              
+              a.className = 'process-link';
+              a.href = '?diagram=./resources/' + encodeURIComponent(nomeArquivo);
+              a.textContent = textoAmigavel;
+              
+              // Mantém uma margem esquerda para dar o efeito de recuo/indentação da lista
+              a.style.paddingLeft = '30px'; 
+
+              li.appendChild(a);
+              listContainer.appendChild(li);
+            }
           }
-          files.forEach(f => {
-            const li = document.createElement('li');
-            const a = document.createElement('a');
-            a.className = 'process-link';
-            a.href = '?diagram=./resources/' + encodeURIComponent(f);
-            a.textContent = f.replace(/\.bpmn$/i, '');
-            li.appendChild(a);
-            list.appendChild(li);
-          });
-        })
-        .catch(() => {
-          // Fallback simples: reexibe o item estático se não houver manifest
-          list.innerHTML = '<li><a href="?diagram=./resources/Acionamento de Transbordo.bpmn" class="process-link">Acionamento de Transbordo</a></li>';
         });
-    })();
-  </script>
+      })
+      .catch(err => {
+        console.error(err);
+        listContainer.innerHTML = '<div style="padding: 20px; color: red;">Erro ao carregar menu.</div>';
+      });
+  })();
+</script>
 
 </body>
 </html>
