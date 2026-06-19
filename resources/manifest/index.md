@@ -4,7 +4,7 @@
 - [FLUXO GERAL](Atendimento e Despacho.bpmn)
 - [Atendimento Inicial](Atendimento Inicial.bpmn)
 <!-- - [Cadastrar Incidente](Cadastrar Incidente.bpmn) -->
-- [Cadastrar Ocorrência](Cadastrar Ocorrencia.bpmn) (Versão Principal)
+<!-- - [Cadastrar Ocorrência](Cadastrar Ocorrencia.bpmn) -->
 <!-- - [Cadastrar Ocorrência (v2)](Cadastrar Ocorrencia (2).bpmn) -->
 <!-- - [Identificar Naturezas](Identificar naturezas.bpmn) -->
 <!-- - [Verificar Prioridade da Ocorrência](Verificar prioridade da ocorrencia.bpmn) -->
