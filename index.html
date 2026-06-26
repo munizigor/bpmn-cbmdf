@@ -54,21 +54,24 @@
     }
     .nav-inner {
       max-width: 1080px; margin: 0 auto;
-      display: flex; align-items: center;
-      height: 56px; padding: 0 32px; gap: 0;
+      display: flex; align-items: center; flex-wrap: wrap;
+      min-height: 56px; padding: 10px 32px; gap: 12px;
     }
     .nav-brand { display: flex; align-items: center; margin-right: auto; text-decoration: none; flex-shrink: 0; }
     .nav-logo { height: 36px; width: auto; object-fit: contain; display: block; }
-    .nav-links { display: flex; align-items: center; height: 100%; gap: 0; }
+    .nav-links {
+      display: flex; align-items: center; flex-wrap: wrap;
+      gap: 6px; justify-content: flex-end; min-height: 36px;
+    }
     .nav-link {
-      height: 100%; display: flex; align-items: center;
-      padding: 0 14px; font-size: 13px; font-weight: 500; color: var(--slate);
+      display: flex; align-items: center; min-height: 32px;
+      padding: 0 12px; font-size: 13px; font-weight: 500; color: var(--slate);
       text-decoration: none; border-bottom: 3px solid transparent;
       transition: color 0.15s, border-color 0.15s; white-space: nowrap;
     }
     .nav-link:hover { color: var(--red); border-bottom-color: var(--red-lt); }
     .nav-link.cta {
-      margin-left: 8px; background: var(--red); color: white !important;
+      margin-left: 0; background: var(--red); color: white !important;
       border-radius: 4px; height: 32px; padding: 0 16px;
       border-bottom: none !important; font-weight: 600; font-size: 12.5px;
       align-self: center; transition: background 0.15s;
@@ -288,11 +291,27 @@
       .problem-grid, .impact-grid { grid-template-columns: 1fr 1fr; }
       .solution-layout { grid-template-columns: 1fr; }
       .partners-row { flex-direction: column; }
+      .nav-inner {
+        padding: 10px 16px;
+        justify-content: center;
+      }
+      .nav-brand {
+        margin-right: 0;
+        margin-bottom: 4px;
+      }
+      .nav-links {
+        width: 100%;
+        justify-content: center;
+      }
     }
     @media (max-width: 600px) {
       .hero-inner, .wrap { padding-left: 16px; padding-right: 16px; }
       .util-bar { padding: 0 16px; }
       .problem-grid, .impact-grid { grid-template-columns: 1fr; }
+      .nav-inner { padding: 10px 12px; }
+      .nav-links { gap: 4px; }
+      .nav-link { padding: 0 8px; font-size: 12px; }
+      .nav-link.cta { width: 100%; justify-content: center; margin-top: 4px; }
     }
   </style>
 </head>
